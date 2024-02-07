@@ -10,7 +10,7 @@
 
 WebServer server(80);
 StaticJsonDocument<250> jsonDocument;
-
+File uploadFile;
 
 
 void handleRoot() {
@@ -47,53 +47,39 @@ void listDir() {
 }
 
 void handleUpload() {
-  Serial.println("Inside upload");
-  if (server.hasArg("plain") == false) {
-  }
-
-  String body = server.arg("plain");
-
   if (server.uri() != "/upload") {
-    Serial.println("Return");
     return;
   }
-  File uploadFile;
+  
   HTTPUpload& upload = server.upload();
-  listDir();
-  Serial.print("Status: "); Serial.println(upload.status);
-  Serial.println("Before if");
-  uploadFile = SD.open((String("/") + upload.filename).c_str(), FILE_WRITE);
-  if (upload.status == UPLOAD_FILE_START) {
-    Serial.println("if status upload");
-    if (SD.exists((char *)upload.filename.c_str())) {
-      Serial.println("remove file");
-      SD.remove((char *)upload.filename.c_str());
-    }
-    Serial.println("before opening");
-    
-    Serial.print("Upload: START, filename: "); Serial.println(upload.filename);
-  } else if (upload.status == UPLOAD_FILE_WRITE) {
-    Serial.println("if write");
-    if (uploadFile) {
-      Serial.println("writing");
-      uploadFile.write(upload.buf, upload.currentSize);
-    }
-    Serial.print("Upload: WRITE, Bytes: "); Serial.println(upload.currentSize);
-  } else if (upload.status == UPLOAD_FILE_END) {
-    Serial.println("upload file end");
-    if (uploadFile) {
-      Serial.println("closing");
-      uploadFile.write(upload.buf, upload.currentSize);
-      uploadFile.close();
-    }
-    Serial.print("Upload: END, Size: "); Serial.println(upload.totalSize);
-  }
 
-  Serial.println(body);
-  Serial.println(server.arg(0));
-  listDir();
-  String response = "{\"state\": \"Is it works?\"}";
-  server.send(200, "application/json", response);
+  if (upload.status == UPLOAD_FILE_START)
+  {
+    String filename = upload.filename;
+    if (!filename.startsWith("/")) filename = "/" + filename;
+    Serial.print("Upload File Name: "); Serial.println(filename);
+    SD.remove(filename);                         // Remove a previous version, otherwise data is appended the file again
+    uploadFile = SD.open(filename, FILE_WRITE);  // Open the file for writing in SPIFFS (create it, if doesn't exist)
+    filename = String();
+  }
+  else if (upload.status == UPLOAD_FILE_WRITE)
+  {
+    if (uploadFile) uploadFile.write(upload.buf, upload.currentSize); // Write the received bytes to the file
+  }
+  else if (upload.status == UPLOAD_FILE_END)
+  {
+    if (uploadFile)         // If the file was successfully created
+    {
+      uploadFile.close();   // Close the file again
+      Serial.print("Upload Size: "); Serial.println(upload.totalSize);
+      String response = "{\"state\": \"Is it works?\"}";
+      server.send(200, "application/json", response);
+    }
+    else
+    {
+      Serial.println("Sad else");
+    }
+  }
 }
 
 void handleNotFound() {
@@ -146,7 +132,9 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   server.on("/", handleRoot);
-  server.on("/upload", HTTP_POST, handleUpload);
+  server.on("/upload", HTTP_POST, []() {
+    server.send(200);
+  }, handleUpload);
   server.onNotFound(handleNotFound);
   server.begin();
   Serial.println("HTTP server started");
