@@ -18,39 +18,45 @@ void handleRoot() {
   server.send(200, "text/html", html);
 }
 
-void printDirectory(File dir, int numTabs) {
-  while (true) {
+String get_directory_json(File root) {
+  String result = "{\"files\": [";
 
-    File entry =  dir.openNextFile();
-    if (! entry) {
-      // no more files
-      break;
-    }
-    for (uint8_t i = 0; i < numTabs; i++) {
-      Serial.print('\t');
-    }
-    Serial.print(entry.name());
-    if (entry.isDirectory()) {
-      Serial.println("/");
-      printDirectory(entry, numTabs + 1);
-    } else {
-      // files have sizes, directories do not
-      Serial.print("\t\t");
-      Serial.println(entry.size(), DEC);
-    }
-    entry.close();
+  if (!root) {
+    Serial.println("Failed to open directory");
+    result += "]}";
+    return result;
   }
+
+  File file = root.openNextFile();
+  while (file) {
+    if (file.isDirectory()) {
+      if ((String)file.name() != "/System Volume Information")result += get_directory_json(file);
+    } else {
+      result += "\n{\"name\": \"";
+      result += file.name();
+      result += "\",\n\"size\": ";
+      result += file.size();
+      result += "},";
+    }
+    file = root.openNextFile();
+  }
+  if (result.endsWith(",")) {
+    result.remove(result.length() - 1);
+  }
+  result += "]}";
+  return result;
 }
 
-void listDir() {
-  printDirectory(SD.open("/"), 0);
+void handleList() {
+  String response = get_directory_json(SD.open("/"));
+  server.send(200, "application/json", response);
 }
 
 void handleUpload() {
   if (server.uri() != "/upload") {
     return;
   }
-  
+
   HTTPUpload& upload = server.upload();
 
   if (upload.status == UPLOAD_FILE_START)
@@ -72,7 +78,7 @@ void handleUpload() {
     {
       uploadFile.close();   // Close the file again
       Serial.print("Upload Size: "); Serial.println(upload.totalSize);
-      String response = "{\"state\": \"Is it works?\"}";
+      String response = get_directory_json(SD.open("/"));
       server.send(200, "application/json", response);
     }
     else
@@ -132,6 +138,7 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   server.on("/", handleRoot);
+  server.on("/list", HTTP_GET, handleList);
   server.on("/upload", HTTP_POST, []() {
     server.send(200);
   }, handleUpload);

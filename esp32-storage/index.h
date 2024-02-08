@@ -1,4 +1,4 @@
-const char *HTML_HOME_PAGE = R"(
+const char *HTML_HOME_PAGE = R"===(
 <!DOCTYPE html>
 <html lang="en">
 
@@ -171,50 +171,6 @@ const char *HTML_HOME_PAGE = R"(
                     <div class="space_left">Used: 2574Mb / 30424Mb</div>
                 </li>
 
-                <li>
-                    <div class="file_name">
-                        <p>README.md</p>
-                    </div>
-                    <div class="file_size">
-                        <p>245 b</p>
-                    </div>
-                    <div class="download_wrapper"><button class="download_btn">Download</button></div>
-                    <div class="delete_wrapper"><button class="delete_btn">Delete</button></div>
-                </li>
-
-                <li>
-                    <div class="file_name">
-                        <p>.gitignore</p>
-                    </div>
-                    <div class="file_size">
-                        <p>141 Kb</p>
-                    </div>
-                    <div class="download_wrapper"><button class="download_btn">Download</button></div>
-                    <div class="delete_wrapper"><button class="delete_btn">Delete</button></div>
-                </li>
-
-                <li>
-                    <div class="file_name">
-                        <p>image.jpg</p>
-                    </div>
-                    <div class="file_size">
-                        <p>831 Kb</p>
-                    </div>
-                    <div class="download_wrapper"><button class="download_btn">Download</button></div>
-                    <div class="delete_wrapper"><button class="delete_btn">Delete</button></div>
-                </li>
-
-                <li>
-                    <div class="file_name">
-                        <p>movie.mp4</p>
-                    </div>
-                    <div class="file_size">
-                        <p>98 Mb</p>
-                    </div>
-                    <div class="download_wrapper"><button class="download_btn">Download</button></div>
-                    <div class="delete_wrapper"><button class="delete_btn">Delete</button></div>
-                </li>
-
             </ul>
         </div>
     </div>
@@ -228,6 +184,7 @@ const char *HTML_HOME_PAGE = R"(
         input.style.width = 0;
 
         input.addEventListener("change", updateImageDisplay);
+        requestFiles();
 
         function updateImageDisplay() {
             while (preview.firstChild) {
@@ -271,6 +228,47 @@ const char *HTML_HOME_PAGE = R"(
             }
         }
 
+        function updateDirectory(obj) {
+            const directory_list = document.querySelector(".directories");
+
+            directory_list.innerHTML = `<li class="dir_header">
+                                            <div class="file_name">
+                                                <p>File name</p>
+                                            </div>
+                                            <div class="file_size">
+                                                <p>Size</p>
+                                            </div>
+                                            <div class="space_left">Used: 2574Mb / 30424Mb</div>
+                                        </li>`
+
+            const files = obj.files;
+            files.forEach((file) => {
+                var temp = document.createElement('li');
+                temp.innerHTML = `  <div class="file_name">
+                                        <p>${file.name}</p>
+                                    </div>
+                                    <div class="file_size">
+                                        <p>${returnFileSize(file.size)}</p>
+                                    </div>
+                                    <div class="download_wrapper"><button onclick="downloadBtnPressed()" class="download_btn">Download</button></div>
+                                    <div class="delete_wrapper"><button onclick="deleteBtnPressed()" class="delete_btn">Delete</button></div>`;
+                directory_list.appendChild(temp);
+            });
+        }
+
+        function requestFiles() {
+            fetch('/list', {
+                method: 'GET'
+            })
+                .then((rsp) => rsp.json())
+                .then((obj) => {
+                    console.log(obj);
+                    updateDirectory(obj);
+                });
+
+            setTimeout(requestFiles, 5000);
+        }
+
         const upload_button = document.querySelector(".file_submit_btn");
         upload_button.addEventListener("click", (e) => {
             const file_input = document.querySelector("#file_upload");
@@ -286,8 +284,9 @@ const char *HTML_HOME_PAGE = R"(
                 .then((rsp) => rsp.json())
                 .then((obj) => {
                     console.log(obj);
+                    updateDirectory(obj);
                 });
-             event.preventDefault();
+            event.preventDefault();
         });
 
         function get_file_data(btn) {
@@ -297,41 +296,32 @@ const char *HTML_HOME_PAGE = R"(
             return [name, size];
         }
 
-        const download_btns = document.querySelectorAll(".download_btn");
-        download_btns.forEach((download_btn) => {
+        function downloadBtnPressed() {
+            console.log("Download button pressed");
 
-            download_btn.addEventListener("click", (e) => {
-                console.log("Download button pressed");
+            const download_btn = event.srcElement;
+            const [file_name, file_size] = get_file_data(download_btn);
+            console.log(file_name);
+            console.log(file_size);
+        }
 
-                const [file_name, file_size] = get_file_data(download_btn);
+        function deleteBtnPressed() {
+            var confirmation = confirm("Are you sure you want to delete %FILE_NAME%?");
+            if (confirmation) {
+                console.log("File delete approved");
+
+                const download_btn = event.srcElement;
+                const [file_name, file_size] = get_file_data(delete_btn);
                 console.log(file_name);
                 console.log(file_size);
 
-            });
-
-        });
-
-        const delete_btns = document.querySelectorAll(".delete_btn");
-        delete_btns.forEach((delete_btn) => {
-
-            delete_btn.addEventListener("click", (e) => {
-                var confirmation = confirm("Are you sure you want to delete %FILE_NAME%?");
-                if (confirmation) {
-                    console.log("File delete approved");
-
-                    const [file_name, file_size] = get_file_data(delete_btn);
-                    console.log(file_name);
-                    console.log(file_size);
-
-                } else {
-                    console.log("File delete canceled");
-                }
-            });
-
-        })
+            } else {
+                console.log("File delete canceled");
+            }
+        }
 
     </script>
 </body>
 
 </html>
-)";
+)===";
