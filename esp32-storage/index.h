@@ -192,6 +192,7 @@ const char *HTML_HOME_PAGE = R"===(
                 var all = document.querySelectorAll("button");
                 all.forEach((btn) => {
                     btn.disabled = true;
+                    btn.style.cursor = "wait";
                 });
                 return;
             } 
@@ -200,13 +201,13 @@ const char *HTML_HOME_PAGE = R"===(
                 var all = document.querySelectorAll("button");
                 all.forEach((btn) => {
                     btn.disabled = false;
+                    btn.style.cursor = "default";
                 });
                 return;
             }
             console.log("Unknown state: " + state);
             return;
         }
-
         function updateImageDisplay() {
             while (preview.firstChild) {
                 preview.removeChild(preview.firstChild);
