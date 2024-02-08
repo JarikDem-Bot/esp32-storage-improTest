@@ -208,6 +208,7 @@ const char *HTML_HOME_PAGE = R"===(
             console.log("Unknown state: " + state);
             return;
         }
+
         function updateImageDisplay() {
             while (preview.firstChild) {
                 preview.removeChild(preview.firstChild);
@@ -241,12 +242,14 @@ const char *HTML_HOME_PAGE = R"===(
         }
 
         function returnFileSize(number) {
-            if (number < 1024) {
-                return `${number} bytes`;
-            } else if (number >= 1024 && number < 1048576) {
-                return `${(number / 1024).toFixed(1)} KB`;
+            if (number >= 1073741824) {
+                return `${(number / 1073741824).toFixed(1)} GB`;
             } else if (number >= 1048576) {
                 return `${(number / 1048576).toFixed(1)} MB`;
+            } else if (number >= 1024) {
+                return `${(number / 1024).toFixed(1)} KB`;
+            } else if (number < 1024) {
+                return `${number} bytes`;
             }
         }
 
@@ -281,8 +284,10 @@ const char *HTML_HOME_PAGE = R"===(
                 directory_list.appendChild(temp);
             });
 
-            //const space_info = document.querySelector(".space_left");
-            //space_info.innerHTML = `Used: ${returnFileSize(obj.used)}/${returnFileSize(obj.total)}`;
+            const space_info = document.querySelector(".space_left");
+            var usedBytes = obj.used * (1024 *  1024);
+            var totalBytes = obj.total * (1024 *  1024);
+            space_info.innerHTML = `Used: ${returnFileSize(usedBytes)} / ${returnFileSize(totalBytes)}`;
         }
 
         function requestFiles() {
