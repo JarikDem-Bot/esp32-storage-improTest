@@ -6,6 +6,7 @@
 #include <SD.h>
 
 #include "index.h"
+#include "notFound.h"
 #include "password.h"
 
 WebServer server(80);
@@ -119,7 +120,8 @@ void handleUpload() {
 }
 
 void handleNotFound() {
-  server.send(404, "text/html", "<h1>404 Not found</h1><a href=\"/\">Return to main page</a>");
+  String html = HTML_NOTFOUND_PAGE;
+  server.send(404, "text/html", html);
 }
 
 void SD_init() {
