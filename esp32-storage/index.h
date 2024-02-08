@@ -175,7 +175,6 @@ const char *HTML_HOME_PAGE = R"===(
         </div>
     </div>
 
-
     <script>
         const input = document.querySelector("#file_upload");
         const preview = document.querySelector(".preview");
@@ -238,14 +237,18 @@ const char *HTML_HOME_PAGE = R"===(
                                             <div class="file_size">
                                                 <p>Size</p>
                                             </div>
-                                            <div class="space_left">Used: 2574Mb / 30424Mb</div>
+                                            <div class="space_left">Used: used/total</div>
                                         </li>`
 
             const files = obj.files;
             files.forEach((file) => {
+                var name = file.name;
+                if (name[0] == "/") {
+                    name = name.substring(1, name.length);
+                }
                 var temp = document.createElement('li');
                 temp.innerHTML = `  <div class="file_name">
-                                        <p>${file.name}</p>
+                                        <p>${name}</p>
                                     </div>
                                     <div class="file_size">
                                         <p>${returnFileSize(file.size)}</p>
@@ -254,6 +257,9 @@ const char *HTML_HOME_PAGE = R"===(
                                     <div class="delete_wrapper"><button onclick="deleteBtnPressed()" class="delete_btn">Delete</button></div>`;
                 directory_list.appendChild(temp);
             });
+
+            //const space_info = document.querySelector(".space_left");
+            //space_info.innerHTML = `Used: ${returnFileSize(obj.used)}/${returnFileSize(obj.total)}`;
         }
 
         function requestFiles() {
@@ -266,7 +272,7 @@ const char *HTML_HOME_PAGE = R"===(
                     updateDirectory(obj);
                 });
 
-            setTimeout(requestFiles, 5000);
+            setTimeout(requestFiles, 30000);
         }
 
         const upload_button = document.querySelector(".file_submit_btn");
@@ -277,6 +283,7 @@ const char *HTML_HOME_PAGE = R"===(
             formData.append(file.name, file);
 
             console.log(file.name);
+            document.body.style.cursor = "wait";
             fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -285,6 +292,7 @@ const char *HTML_HOME_PAGE = R"===(
                 .then((obj) => {
                     console.log(obj);
                     updateDirectory(obj);
+                    document.body.style.cursor = "default";
                 });
             event.preventDefault();
         });
@@ -296,6 +304,19 @@ const char *HTML_HOME_PAGE = R"===(
             return [name, size];
         }
 
+        function download(blob, filename) {
+            document.body.style.cursor = "default";
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
         function downloadBtnPressed() {
             console.log("Download button pressed");
 
@@ -303,17 +324,41 @@ const char *HTML_HOME_PAGE = R"===(
             const [file_name, file_size] = get_file_data(download_btn);
             console.log(file_name);
             console.log(file_size);
+
+            fetch('/download', {
+                method: 'POST',
+                body: file_name
+            })
+                .then((rsp) => {
+                    document.body.style.cursor = "wait";
+                    console.log(rsp);
+                    console.log(rsp.body);
+                    rsp.blob().then(blob => download(blob, file_name));
+                })
+                .then((obj) => {
+                    console.log(obj);
+                });
         }
 
         function deleteBtnPressed() {
-            var confirmation = confirm("Are you sure you want to delete %FILE_NAME%?");
+            const delete_btn = event.srcElement;
+            const [file_name, file_size] = get_file_data(delete_btn);
+            console.log(file_name);
+            console.log(file_size);
+
+            var confirmation = confirm(`Are you sure you want to delete ${file_name}?`);
             if (confirmation) {
                 console.log("File delete approved");
 
-                const download_btn = event.srcElement;
-                const [file_name, file_size] = get_file_data(delete_btn);
-                console.log(file_name);
-                console.log(file_size);
+                fetch('/delete', {
+                    method: 'DELETE',
+                    body: file_name
+                })
+                    .then((rsp) => rsp.json())
+                    .then((obj) => {
+                        console.log(obj);
+                        updateDirectory(obj);
+                    });
 
             } else {
                 console.log("File delete canceled");
