@@ -4,10 +4,13 @@
 #include <ArduinoJson.h>
 #include <SPI.h>
 #include <SD.h>
+#include <FastBot.h>
 
 #include "index.h"
 #include "notFound.h"
 #include "password.h"
+
+FastBot bot(BOT_TOKEN);
 
 WebServer server(80);
 StaticJsonDocument<250> jsonDocument;
@@ -124,6 +127,10 @@ void handleNotFound() {
   server.send(404, "text/html", html);
 }
 
+void newMessage(FB_msg& msg) {
+  bot.replyMessage(msg.text, msg.messageID, msg.chatID);
+}
+
 void SD_init() {
   if (!SD.begin()) {
     Serial.println("Card Mount Failed");
@@ -151,6 +158,19 @@ void SD_init() {
   Serial.printf("SD Card Size: %lluMB\n", cardSize);
 }
 
+void connectWifi() {
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected.");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
 void serverRoute() {
   server.on("/", handleRoot);
   server.on("/list", HTTP_GET, handleList);
@@ -168,23 +188,17 @@ void setup() {
 
   SD_init();
 
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  connectWifi();
 
   serverRoute();
   server.begin();
   Serial.println("HTTP server started");
+
+  bot.attach(newMessage);
 }
 
 void loop() {
   server.handleClient();
+  bot.tick();
   delay(2);
 }
