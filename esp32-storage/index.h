@@ -50,6 +50,7 @@ const char *HTML_HOME_PAGE = R"===(
             margin-bottom: 10px;
             list-style-type: none;
             border: 1px solid black;
+            border-radius: 5px;
         }
 
         .file_upload_form img {
@@ -185,6 +186,27 @@ const char *HTML_HOME_PAGE = R"===(
         input.addEventListener("change", updateImageDisplay);
         requestFiles();
 
+        function changeState(state) {
+            if(state == "wait") {
+                document.body.style.cursor = "wait";
+                var all = document.querySelectorAll("button");
+                all.forEach((btn) => {
+                    btn.disabled = true;
+                });
+                return;
+            } 
+            if (state == "default") {
+                document.body.style.cursor = "default";
+                var all = document.querySelectorAll("button");
+                all.forEach((btn) => {
+                    btn.disabled = false;
+                });
+                return;
+            }
+            console.log("Unknown state: " + state);
+            return;
+        }
+
         function updateImageDisplay() {
             while (preview.firstChild) {
                 preview.removeChild(preview.firstChild);
@@ -283,7 +305,7 @@ const char *HTML_HOME_PAGE = R"===(
             formData.append(file.name, file);
 
             console.log(file.name);
-            document.body.style.cursor = "wait";
+            changeState("wait");
             fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -292,7 +314,7 @@ const char *HTML_HOME_PAGE = R"===(
                 .then((obj) => {
                     console.log(obj);
                     updateDirectory(obj);
-                    document.body.style.cursor = "default";
+                    changeState("default");
                 });
             event.preventDefault();
         });
@@ -305,7 +327,7 @@ const char *HTML_HOME_PAGE = R"===(
         }
 
         function download(blob, filename) {
-            document.body.style.cursor = "default";
+            changeState("default");
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
@@ -330,7 +352,7 @@ const char *HTML_HOME_PAGE = R"===(
                 body: file_name
             })
                 .then((rsp) => {
-                    document.body.style.cursor = "wait";
+                    changeState("wait");
                     console.log(rsp);
                     console.log(rsp.body);
                     rsp.blob().then(blob => download(blob, file_name));
