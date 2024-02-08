@@ -5,59 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESP32 Storage</title>
-    <!--<style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .file_upload_form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-around;
-        }
-
-        .file_upload_form * {
-            text-align: center;
-            margin: 15px 0;
-        }
-
-        p {
-            color: black;
-            font-size: large;
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-        }
-
-        .file_upload_form label,
-        button {
-            background-color: #04AA6D;
-            border: none;
-            border-radius: 15px;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            transition-duration: 0.5s;
-        }
-        .file_upload_form label,
-        button:hover {
-            box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.24), 0 10px 20px 0 rgba(0, 0, 0, 0.19);
-            transition-duration: 0.5s;
-        }
-        .file_upload_form label,
-        button:active {
-            background-color: #027048;
-        }
-    </style>-->
     <style>
         * {
             margin: 0;
@@ -195,7 +143,7 @@
 
 <body>
     <div class="container">
-        <form action="/post" method="post" class="file_upload_form" enctype="multipart/form-data">
+        <form class="file_upload_form" method="post" action="/upload" enctype="multipart/form-data">
             <div>
                 <label for="file_upload">Choose file to upload to ESP32</label>
                 <input type="file" id="file_upload" name="file_upload">
@@ -222,50 +170,6 @@
                     <div class="space_left">Used: 2574Mb / 30424Mb</div>
                 </li>
 
-                <li>
-                    <div class="file_name">
-                        <p>README.md</p>
-                    </div>
-                    <div class="file_size">
-                        <p>245 b</p>
-                    </div>
-                    <div class="download_wrapper"><button class="download_btn">Download</button></div>
-                    <div class="delete_wrapper"><button class="delete_btn">Delete</button></div>
-                </li>
-
-                <li>
-                    <div class="file_name">
-                        <p>.gitignore</p>
-                    </div>
-                    <div class="file_size">
-                        <p>141 Kb</p>
-                    </div>
-                    <div class="download_wrapper"><button class="download_btn">Download</button></div>
-                    <div class="delete_wrapper"><button class="delete_btn">Delete</button></div>
-                </li>
-
-                <li>
-                    <div class="file_name">
-                        <p>image.jpg</p>
-                    </div>
-                    <div class="file_size">
-                        <p>831 Kb</p>
-                    </div>
-                    <div class="download_wrapper"><button class="download_btn">Download</button></div>
-                    <div class="delete_wrapper"><button class="delete_btn">Delete</button></div>
-                </li>
-
-                <li>
-                    <div class="file_name">
-                        <p>movie.mp4</p>
-                    </div>
-                    <div class="file_size">
-                        <p>98 Mb</p>
-                    </div>
-                    <div class="download_wrapper"><button class="download_btn">Download</button></div>
-                    <div class="delete_wrapper"><button class="delete_btn">Delete</button></div>
-                </li>
-
             </ul>
         </div>
     </div>
@@ -279,6 +183,7 @@
         input.style.width = 0;
 
         input.addEventListener("change", updateImageDisplay);
+        requestFiles();
 
         function updateImageDisplay() {
             while (preview.firstChild) {
@@ -322,44 +227,65 @@
             }
         }
 
-        const upload_button = document.querySelector(".file_submit_btn");
-        upload_button.addEventListener("click", (e) => {
-            //const form = document.querySelector(".file_upload_form");
-            //const url = new URL(form.action);
-            //const formData = new FormData(form);
-            //const searchParams = new URLSearchParams(formData);
-            const file_input = document.querySelector("#file_upload");
+        function updateDirectory(obj) {
+            const directory_list = document.querySelector(".directories");
 
-            /*const fetchOptions = {
-                method: form.method,
-            };
+            directory_list.innerHTML = `<li class="dir_header">
+                                            <div class="file_name">
+                                                <p>File name</p>
+                                            </div>
+                                            <div class="file_size">
+                                                <p>Size</p>
+                                            </div>
+                                            <div class="space_left">Used: 2574Mb / 30424Mb</div>
+                                        </li>`
 
-            if (form.method.toLowerCase() === 'post') {
-                if (form.enctype === 'multipart/form-data') {
-                    fetchOptions.body = formData;
-                } else {
-                    fetchOptions.body = searchParams;
-                }
-            } else {
-                url.search = searchParams;
-            }
+            const files = obj.files;
+            files.forEach((file) => {
+                var temp = document.createElement('li');
+                temp.innerHTML = `  <div class="file_name">
+                                        <p>${file.name}</p>
+                                    </div>
+                                    <div class="file_size">
+                                        <p>${returnFileSize(file.size)}</p>
+                                    </div>
+                                    <div class="download_wrapper"><button onclick="downloadBtnPressed()" class="download_btn">Download</button></div>
+                                    <div class="delete_wrapper"><button onclick="deleteBtnPressed()" class="delete_btn">Delete</button></div>`;
+                directory_list.appendChild(temp);
+            });
+        }
 
-            console.log(url);
-            console.log(fetchOptions);
-
-            fetch(url, fetchOptions);
-
-            e.preventDefault();*/
-            //one dev to find them all and in the darkness bind them 
-            fetch('/upload', {
-                method: 'POST',
-                headers: {},
-                body: file_input.files[0]
+        function requestFiles() {
+            fetch('/list', {
+                method: 'GET'
             })
                 .then((rsp) => rsp.json())
                 .then((obj) => {
                     console.log(obj);
+                    updateDirectory(obj);
                 });
+
+            setTimeout(requestFiles, 5000);
+        }
+
+        const upload_button = document.querySelector(".file_submit_btn");
+        upload_button.addEventListener("click", (e) => {
+            const file_input = document.querySelector("#file_upload");
+            const file = file_input.files[0]
+            const formData = new FormData();
+            formData.append(file.name, file);
+
+            console.log(file.name);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then((rsp) => rsp.json())
+                .then((obj) => {
+                    console.log(obj);
+                    updateDirectory(obj);
+                });
+            event.preventDefault();
         });
 
         function get_file_data(btn) {
@@ -369,38 +295,29 @@
             return [name, size];
         }
 
-        const download_btns = document.querySelectorAll(".download_btn");
-        download_btns.forEach((download_btn) => {
+        function downloadBtnPressed() {
+            console.log("Download button pressed");
 
-            download_btn.addEventListener("click", (e) => {
-                console.log("Download button pressed");
+            const download_btn = event.srcElement;
+            const [file_name, file_size] = get_file_data(download_btn);
+            console.log(file_name);
+            console.log(file_size);
+        }
 
-                const [file_name, file_size] = get_file_data(download_btn);
+        function deleteBtnPressed() {
+            var confirmation = confirm("Are you sure you want to delete %FILE_NAME%?");
+            if (confirmation) {
+                console.log("File delete approved");
+
+                const download_btn = event.srcElement;
+                const [file_name, file_size] = get_file_data(delete_btn);
                 console.log(file_name);
                 console.log(file_size);
 
-            });
-
-        });
-
-        const delete_btns = document.querySelectorAll(".delete_btn");
-        delete_btns.forEach((delete_btn) => {
-
-            delete_btn.addEventListener("click", (e) => {
-                var confirmation = confirm("Are you sure you want to delete %FILE_NAME%?");
-                if (confirmation) {
-                    console.log("File delete approved");
-
-                    const [file_name, file_size] = get_file_data(delete_btn);
-                    console.log(file_name);
-                    console.log(file_size);
-
-                } else {
-                    console.log("File delete canceled");
-                }
-            });
-
-        })
+            } else {
+                console.log("File delete canceled");
+            }
+        }
 
     </script>
 </body>
