@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <FastBot.h>
+#include <HttpsOTAUpdate.h>
 
 #include "index.h"
 #include "notFound.h"
@@ -61,6 +62,8 @@ void setup() {
 
   connectWifi();
 
+  github_ota_init();
+
   serverRoute();
   server.begin();
   Serial.println("HTTP server started");
@@ -69,6 +72,7 @@ void setup() {
 }
 
 void loop() {
+  github_ota_tick();
   server.handleClient();
   bot.tick();
   delay(2);
