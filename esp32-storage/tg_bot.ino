@@ -8,29 +8,92 @@ void newMessage(FB_msg& msg) {
   bot.sendTyping(msg.chatID);
   String replyMsg = "";
 
-  if (msg.text == "/list") {
+  if (!userIdInList(msg.userID)) {
+    replyMsg += bot_denied(msg);
+  } else if (msg.text == "/help") {
+    replyMsg = bot_help(msg);
+  } else if(msg.text == "/web") {
+     replyMsg = bot_web(msg);
+  } else if (msg.text == "/list") {
     replyMsg = bot_list(msg);
-  }
-  else if (msg.text.startsWith("/delete ")) {
+  } else if (msg.text.startsWith("/delete ")) {
     replyMsg = bot_delete(msg);
   } else if (msg.text.startsWith("/download ")) {
     replyMsg = bot_download(msg);
   } else if (msg.isFile) {
     replyMsg = bot_upload(msg);
+  } else {
+    replyMsg = bot_unknown(msg);
   }
 
   replyMsg = msgClear(replyMsg);
   bot.replyMessage(replyMsg, msg.messageID, msg.chatID);
 }
 
-String bot_list(FB_msg msg) {
+bool userIdInList(String userId) {
+  bool result = false;
+  for(int i = 0; i < sizeof(allowedUsers) / sizeof(allowedUsers[0]); i++) {
+    if (userId == allowedUsers[i]) {
+      result = true;
+    }
+  }
+  return result;
+}
+
+String bot_denied(FB_msg msg) {
+  String replyMsg = "";
+
+  replyMsg += "*--ACCESS DENIED--*\n\n";
+  replyMsg += "Only users from the list are allowed to use this bot.\n";
+  replyMsg += "To add this user, you need to add this userID to the `allowedUsers` array in `password.h` and update firmware.\n";
+  replyMsg += "Your user ID: `";
+  replyMsg += msg.userID;
+  replyMsg += "`";
+
+  return replyMsg;
+}
+
+String bot_help(FB_msg msg) {
   String replyMsg;
+  
+  replyMsg += "This is data storage based on ESP32 with micro SD card.\n";
+  replyMsg += "\n__*General commands:*__\n";
+  replyMsg += "Use command /list to get the list of all files stored on SD card.\n";
+  replyMsg += "Use command /web to access web interface\n";
+  replyMsg += "Use command /help to get this message.\n";
+  replyMsg += "\n__*Commands with files:*__\n";
+  replyMsg += "To run this command, you'll need to send comand and name of taget file after one space.";
+  replyMsg += "If you click on the file name in response message to /list command, it will be copied to your clipboard.\n";
+  replyMsg += "Use command `/delete text.txt` to delete file named text.txt\n";
+  replyMsg += "Use command `/download text.txt` to upload file text.txt from SD card to this chat\n";
+  replyMsg += "Just send any file to download it on SD card.\n";
+  replyMsg += "\nMore info you can find in this [GitHub repository](https://github.com/JarikDem-Bot/esp32-storage-improTest).";
+
+  return replyMsg;
+}
+
+String bot_web(FB_msg msg) {
+  String replyMsg = "";
+
+  replyMsg += "IP address: [";
+  replyMsg += WiFi.localIP().toString();
+  replyMsg += "](http://";
+  replyMsg += WiFi.localIP().toString();
+  replyMsg += ")\n\n";
+  replyMsg += "Open this address in your browser to access WEB Interface.\n";
+  replyMsg += "*NOTE:* you must be connected to the same network as ESP32 in order to access web interface";
+
+  return replyMsg;
+}
+
+String bot_list(FB_msg msg) {
+  String replyMsg = "";
   replyMsg = get_directories_msg(SD.open("/"));
   return replyMsg;
 }
 
 String bot_delete(FB_msg msg) {
-  String replyMsg;
+  String replyMsg = "";
   String filename = msg.text.substring(String("/delete ").length());
 
   if (!filename.startsWith("/")) filename = "/" + filename;
@@ -52,7 +115,7 @@ String bot_delete(FB_msg msg) {
 }
 
 String bot_download(FB_msg msg) {
-  String replyMsg;
+  String replyMsg = "";
   String filename = msg.text.substring(String("/download ").length());
 
   if (!filename.startsWith("/")) filename = "/" + filename;
@@ -73,7 +136,7 @@ String bot_download(FB_msg msg) {
 }
 
 String bot_upload(FB_msg msg) {
-  String replyMsg;
+  String replyMsg = "";
 
   String filename = msg.fileName;
   if (!filename.startsWith("/")) filename = "/" + filename;
@@ -102,6 +165,16 @@ String bot_upload(FB_msg msg) {
   return replyMsg;
 }
 
+String bot_unknown(FB_msg msg) {
+  String replyMsg = "";
+
+  replyMsg += "This command is unknown to me. Please, check:\n";
+  replyMsg += "-spelling of the command\n";
+  replyMsg += "-file name must be one space after command itself in the same message\n";
+  replyMsg += "\nYou can use /help command to get list of all available commands.";
+
+  return replyMsg;
+}
 
 String msgClear(String message) { //Fast bot doesn't send message if it contsins "!" or "#"
   while (message.indexOf("!") != -1) {
