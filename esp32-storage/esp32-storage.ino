@@ -1,7 +1,6 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
-#include <ArduinoJson.h>
 #include <SPI.h>
 #include <SD.h>
 #include <FastBot.h>
@@ -52,8 +51,6 @@ void connectWifi() {
   Serial.println("WiFi connected.");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  Serial.println("Web server at: ");
-  Serial.print(WiFi.localIP()); Serial.println(":80");
 }
 
 void setup() {
