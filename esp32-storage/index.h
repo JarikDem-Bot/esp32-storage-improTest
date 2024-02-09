@@ -95,6 +95,7 @@ const char *HTML_HOME_PAGE = R"===(
 
         .directories {
             min-width: 70%;
+            max-width: 95%;
         }
 
         .directories>li {
