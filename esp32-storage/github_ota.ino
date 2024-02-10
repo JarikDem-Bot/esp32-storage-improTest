@@ -6,6 +6,7 @@ Ticker otaTicker;
 
 void github_ota_init() {
   HttpsOTA.onHttpEvent(HttpEvent);
+  startOta();
   otaTicker.attach(1800, startOta);
 }
 
@@ -51,7 +52,6 @@ void HttpEvent(HttpEvent_t *event)
       break;
     case HTTP_EVENT_ON_DATA:
       if(abortOta) {
-        Serial.println("OTA update aborted");
         break;
       }
       break;
