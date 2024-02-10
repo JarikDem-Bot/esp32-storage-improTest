@@ -55,7 +55,6 @@ String bot_denied(FB_msg msg) {
 
 String bot_help(FB_msg msg) {
   String replyMsg;
-  
   replyMsg += "This is data storage based on ESP32 with micro SD card.\n";
   replyMsg += "\n__*General commands:*__\n";
   replyMsg += "Use command /list to get the list of all files stored on SD card.\n";
