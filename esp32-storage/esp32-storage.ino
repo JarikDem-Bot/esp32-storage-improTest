@@ -5,14 +5,16 @@
 #include <SD.h>
 #include <FastBot.h>
 #include <HttpsOTAUpdate.h>
+#include <Preferences.h>
+#include <Ticker.h>
 
 #include "index.h"
 #include "notFound.h"
 #include "password.h"
 
 FastBot bot(BOT_TOKEN);
-
 WebServer server(80);
+Preferences preferences;
 
 void SD_init() {
   if (!SD.begin()) {
@@ -57,6 +59,7 @@ void connectWifi() {
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, password);
+  preferences.begin("my-app", false);
 
   SD_init();
 
