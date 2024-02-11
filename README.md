@@ -31,7 +31,7 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 
 1. Clone this repository using `git clone https://github.com/JarikDem-Bot/esp32-storage-improTest.git`
 
-2. Connect micro SD card adapter to ESP32:
+2. Connect [micro SD card adapter](https://arduino.ua/ru/prod1601-modyl-micro-sdtf-card) to ESP32:
 
 | Micro Sd Adapter  | ESP32 |
 | ------------- | ------------- |
