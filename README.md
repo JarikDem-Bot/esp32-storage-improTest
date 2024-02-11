@@ -10,7 +10,7 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
   - Upload files
   - View list of stored files
   - Check used and total SD card space
-  - List auto-update every 30 seconds and after every action
+  - Automatically updates the list every 30 seconds and after each action
   - Download or delete files
 
 - 🤖 Telegram Bot
@@ -42,7 +42,7 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 | VCC  | VIN  |
 | GND  | GND  |
 
-3. Set up Arduino IDE for work with ESP boards. [More info here](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
+3. Configure the Arduino IDE to work with ESP boards. [More info here](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
 
 4. Open `esp32-storage.ino` in `esp32-storage/` folder
 
