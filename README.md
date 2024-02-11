@@ -77,10 +77,20 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 ### Web Interface
 
 - Upload file
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/613f0d76-e58f-4ca9-940b-2c8a7b7fb2ab" width="40%">
+
 - View files
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/03587921-da02-442b-94d8-39e37c8a4048" width="40%">
+
 - Download files
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/f5fac00e-d1eb-479c-91de-824a66b28439" width="40%">
+
 - Delete files
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/546975d0-e268-4836-a328-ef0fcbdd048e" width="40%">
+
 - Looks surprisingly good on phones
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/c182ea27-d5cf-4803-8012-12874f8a30e0" width="40%">
+
 
 ### Telegram Bot
 
