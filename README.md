@@ -30,18 +30,47 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 
 1. Clone this repository using `git clone https://github.com/JarikDem-Bot/esp32-storage-improTest.git`
 
-2. Set up Arduino IDE for work with ESP boards. [More info here](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
+2. Connect micro SD card adapter to ESP32:
 
-3. Open `esp32-storage.ino` in `esp32-storage/` folder
+| Micro Sd Adapter  | ESP32 |
+| ------------- | ------------- |
+| CS  | D5  |
+| SCK | D18  |
+| MOSI  | D23  |
+| MISO  | D19  |
+| VCC  | VIN  |
+| GND  | GND  |
 
-4. Select `ESP32 Wrover Module` board
- <img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/2aaa9429-f0a9-4b6f-bb54-6d7ba475cd0a" width="40%">
+3. Set up Arduino IDE for work with ESP boards. [More info here](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
 
-5. Install required libraries if they aren't installed already
+4. Open `esp32-storage.ino` in `esp32-storage/` folder
 
-6. Select board port and upload program
+5. Select `ESP32 Wrover Module` board
+ <img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/7c173446-3014-4dc0-afc5-7f885d02aefb" width="40%">
 
-7. Enjoy
+6. Install required libraries if they aren't installed already
+
+- [WiFi.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFi)
+- [WiFiClient.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/WiFi)
+- [WebServer.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/WebServer)
+- [SPI.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/SPI)
+- [SD.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/SD)
+- [FastBot.h](https://github.com/GyverLibs/FastBot)
+- [HttpsOTAUpdate.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/Update)
+- [Preferences.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/Preferences)
+- [Ticker.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/Ticker)
+
+7. Open password.h and set values of: 
+- ssid - your WiFi network name
+- password - password to your WiFi
+- BOT_TOKEN - token of your telegram bot
+- allowedUsers - array of telegram userIDs of users allowed to use your bot
+- otaUrl - link to [binary file](https://randomnerdtutorials.com/bin-binary-files-sketch-arduino-ide/) on your GitHub repository in format `https://raw.githubusercontent.com/username/repoName/branch/pathToFile/filename.bin`
+- [server_certificate](https://github.com/RadialDevGroup/esp32-ota-https-example/blob/master/README.md#step-3-create-the-server-certificates-file) - certificate
+
+8. Select board and upload program
+
+9. Enjoy:)
 
 ## Showcase
 
@@ -51,17 +80,32 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 - View files
 - Download files
 - Delete files
-- Looks urprisingly good on phones
+- Looks surprisingly good on phones
 
 ### Telegram Bot
 
-- Access only to scpecified users
+- Access granted only for scpecified users
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/41e12d1d-a4c8-484f-ae87-db1e12016012" width="40%">
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/b4c9ef96-e3e8-4300-a5b5-98d65b7a996b" width="40%">
+
 - View files
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/9d6dfec7-b184-4f72-8cd3-6fdb3a24313e" width="40%">
+
 - Download file by name
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/f8a2b525-d607-4c3d-969b-92d0d8201807" width="40%">
+
 - Delete file by name
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/4e6172ab-b54a-437d-a339-1236d6c668e9" width="40%">
+
 - Upload file by sending to the chat
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/669a5ffe-1691-4d91-a685-04fcab5bdd8f" width="40%">
+
 - Get link to the Web Interface
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/0c55aeb6-586e-48dd-8887-a99a635b23fe" width="40%">
+
 - Help message
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/1a1a6160-0aaf-4dd0-9c6c-35e4fb061f67" width="40%">
+
 
 ### OTA
 
@@ -69,8 +113,3 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 - Binary file stored on GitHub
 - Compares version with current
 - Checks for update every 30 minutes
-
-ToDo:
-- describe ssid, password, url, allowedUsers and sertificate
-- Add tags and/or image?
-- How to connect micro SD module 
