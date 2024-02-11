@@ -60,9 +60,7 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 - [Preferences.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/Preferences)
 - [Ticker.h](https://github.com/espressif/arduino-esp32/tree/master/libraries/Ticker)
 
-7. Open password.h and set values of: 
-- ssid - your WiFi network name
-- password - password to your WiFi
+7. Open password.h and change values if needed: 
 - BOT_TOKEN - token of your telegram bot
 - allowedUsers - array of telegram userIDs of users allowed to use your bot
 - otaUrl - link to [binary file](https://randomnerdtutorials.com/bin-binary-files-sketch-arduino-ide/) on your GitHub repository in format `https://raw.githubusercontent.com/username/repoName/branch/pathToFile/filename.bin`
@@ -70,7 +68,9 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 
 8. Select board and upload program
 
-9. Enjoy:)
+9. If board will be unable to connect to WiFi, it will create Access Point named "ESP32 Storage". By clicking on it, you will be redirected to the web page, where you can select WiFi credential.
+
+10. Enjoy:)
 
 ## Showcase
 
@@ -116,6 +116,14 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 - Help message
 <img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/1a1a6160-0aaf-4dd0-9c6c-35e4fb061f67" width="40%">
 
+### WiFi setup through AP
+
+- If board is unable to connect to previous WiFi, it will start AP
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/ac84980b-403f-4b0c-8a42-fcb01289edf4" width="30%">
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/84340d9c-44ae-4b8e-b102-7c90a8657ce8" width="30%">
+<img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/bb2824b0-3f3b-4cb1-a48e-cc4a1c7c1861" width="30%">
+
+
 
 ### OTA
 
@@ -123,3 +131,8 @@ File storage with WEB Interface and telegram bot to upload/download/delete files
 - Binary file stored on GitHub
 - Compares version with current
 - Checks for update every 30 minutes
+
+## TODO
+- [ ] Get allowed users list for TG Bot from file on SD card
+- [ ] Add folders on the SD
+- [ ] Web Interface authentification
