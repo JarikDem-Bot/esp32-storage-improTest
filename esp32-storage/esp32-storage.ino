@@ -57,14 +57,13 @@ void connectWifi() {
     ESP.restart();
   }
 
-  Serial.println("WiFi connected.");*/
+  Serial.println("WiFi connected.");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 }
 
 void setup() {
   Serial.begin(115200);
-  WiFi.begin(ssid, password);
   preferences.begin("my-app", false);
 
   SD_init();
