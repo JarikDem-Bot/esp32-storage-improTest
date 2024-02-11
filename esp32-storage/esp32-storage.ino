@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
+#include <WiFiManager.h>
 #include <SPI.h>
 #include <SD.h>
 #include <FastBot.h>
@@ -44,14 +45,19 @@ void SD_init() {
 }
 
 void connectWifi() {
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
+  WiFiManager wifiManager;
+
+  bool res;
+
+  res = wifiManager.autoConnect("ESP32 Storage");
+  wifiManager.setDarkMode(true);
+
+  if (!res) {
+    Serial.println("Failed to connect. Restarting board");
+    ESP.restart();
   }
-  Serial.println("");
-  Serial.println("WiFi connected.");
+
+  Serial.println("WiFi connected.");*/
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 }
@@ -71,7 +77,7 @@ void setup() {
   server.begin();
   Serial.println("HTTP server started");
 
-  tg_init(); 
+  tg_init();
 }
 
 void loop() {
