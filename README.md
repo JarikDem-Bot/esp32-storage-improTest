@@ -1,3 +1,4 @@
+<p align="center"><img src="https://github.com/JarikDem-Bot/esp32-storage-improTest/assets/73791422/ac07a276-8e76-4b7d-922b-1c6ccc658aaa"  width="40%"></p>
 <h1 align="center">ESP32 Storage</h1>
 
 File storage with WEB Interface and telegram bot to upload/download/delete files. Based on ESP32 with connected micro SD card.
