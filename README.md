@@ -3,6 +3,8 @@
 
 File storage with WEB Interface and telegram bot to upload/download/delete files. Based on ESP32 with connected micro SD card.
 
+[README українською](https://github.com/JarikDem-Bot/esp32-storage-improTest/blob/master/README_UA.md)
+
 ## Features
 
 - 🌐 Web Interface
