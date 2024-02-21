@@ -1,14 +1,14 @@
 void tg_init() {
   bot.skipUpdates();
-  bot.attach(newMessage);
+  bot.attach(new_message);
   bot.setTextMode(FB_MARKDOWN);
 }
 
-void newMessage(FB_msg& msg) {
+void new_message(FB_msg& msg) {
   bot.sendTyping(msg.chatID);
   String replyMsg = "";
 
-  if (!userIdInList(msg.userID)) {
+  if (!user_id_in_list(msg.userID)) {
     replyMsg += bot_denied(msg);
   } else if (msg.text == "/help") {
     replyMsg = bot_help(msg);
@@ -26,11 +26,11 @@ void newMessage(FB_msg& msg) {
     replyMsg = bot_unknown(msg);
   }
 
-  replyMsg = msgClear(replyMsg);
+  replyMsg = msg_clear(replyMsg);
   bot.replyMessage(replyMsg, msg.messageID, msg.chatID);
 }
 
-bool userIdInList(String userId) {
+bool user_id_in_list(String userId) {
   bool result = false;
   for(int i = 0; i < sizeof(allowedUsers) / sizeof(allowedUsers[0]); i++) {
     if (userId == allowedUsers[i]) {
@@ -175,7 +175,7 @@ String bot_unknown(FB_msg msg) {
   return replyMsg;
 }
 
-String msgClear(String message) { //Fast bot doesn't send message if it contsins "!" or "#"
+String msg_clear(String message) { //Fast bot doesn't send message if it contsins "!" or "#"
   while (message.indexOf("!") != -1) {
     message.replace("!", ".");
   }
@@ -185,7 +185,7 @@ String msgClear(String message) { //Fast bot doesn't send message if it contsins
   return message;
 }
 
-String returnFileSize(uint64_t bytes) {
+String return_file_size(uint64_t bytes) {
   String result = "";
   float value;
   if (bytes >= 1073741824) {
@@ -211,11 +211,11 @@ String get_directories_msg(File root) {
   String result = "*SD storage:*\n";
   result += "_used: ";
   uint64_t usedSpace = SD.usedBytes();
-  result += returnFileSize(usedSpace);
+  result += return_file_size(usedSpace);
   result += " / ";
 
   uint64_t cardSize = SD.cardSize();
-  result += returnFileSize(cardSize);
+  result += return_file_size(cardSize);
   result += "_\n";
 
   if (!root) {
@@ -232,7 +232,7 @@ String get_directories_msg(File root) {
       result += "\n`";
       result += String(file.name()).substring(1);
       result += "` - ";
-      result += returnFileSize(file.size());
+      result += return_file_size(file.size());
     }
     file = root.openNextFile();
   }

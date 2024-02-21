@@ -5,12 +5,12 @@ bool abortOta = false;
 Ticker otaTicker;
 
 void github_ota_init() {
-  HttpsOTA.onHttpEvent(HttpEvent);
-  startOta();
-  otaTicker.attach(1800, startOta);
+  HttpsOTA.onHttpEvent(http_event);
+  start_ota();
+  otaTicker.attach(1800, start_ota);
 }
 
-void startOta() {
+void start_ota() {
   Serial.println("Starting OTA");
   HttpsOTA.begin(otaUrl, server_certificate);
 }
@@ -21,12 +21,10 @@ void github_ota_tick() {
     preferences.putString("ETag", newETag);
     Serial.println("Firmware written successfully. To reboot device, call API ESP.restart() or PUSH restart button on device");
     ESP.restart();
-  } else if (otastatus == HTTPS_OTA_FAIL) {
   }
 }
 
-void HttpEvent(HttpEvent_t *event)
-{
+void http_event(HttpEvent_t *event){
   switch (event->event_id) {
     case HTTP_EVENT_ERROR:
       Serial.println("Http Event Error");

@@ -44,7 +44,7 @@ void SD_init() {
   Serial.printf("SD Card Size: %lluMB\n", cardSize);
 }
 
-void connectWifi() {
+void connect_wifi() {
   WiFiManager wifiManager;
 
   bool res;
@@ -68,11 +68,11 @@ void setup() {
 
   SD_init();
 
-  connectWifi();
+  connect_wifi();
 
   github_ota_init();
 
-  serverRoute();
+  server_route();
   server.begin();
   Serial.println("HTTP server started");
 

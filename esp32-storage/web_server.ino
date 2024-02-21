@@ -1,13 +1,13 @@
 File uploadFile;
 
-void handleRoot() {
+void handle_root() {
   String html = HTML_HOME_PAGE;
   server.send(200, "text/html", html);
 }
 
 String get_directory_list(File root) {
   String result = "{\"files\": [";
-
+  
   if (!root) {
     Serial.println("Failed to open directory");
     result += "]}";
@@ -43,12 +43,12 @@ String get_directory_list(File root) {
   return result;
 }
 
-void handleList() {
+void handle_list() {
   String response = get_directory_list(SD.open("/"));
   server.send(200, "application/json", response);
 }
 
-void handleDelete() {
+void handle_delete() {
   if (server.uri() != "/delete") {
     return;
   }
@@ -62,7 +62,7 @@ void handleDelete() {
   server.send(200, "application/json", response);
 }
 
-void handleDownload() {
+void handle_download() {
   if (server.uri() != "/download") {
     return;
   }
@@ -76,7 +76,7 @@ void handleDownload() {
   file.close();
 }
 
-void handleUpload() {
+void handle_upload() {
   if (server.uri() != "/upload") {
     return;
   }
@@ -113,18 +113,18 @@ void handleUpload() {
   }
 }
 
-void handleNotFound() {
+void handle_not_found() {
   String html = HTML_NOTFOUND_PAGE;
   server.send(404, "text/html", html);
 }
 
-void serverRoute() {
-  server.on("/", handleRoot);
-  server.on("/list", HTTP_GET, handleList);
-  server.on("/delete", HTTP_DELETE, handleDelete);
-  server.on("/download", HTTP_POST, handleDownload);
+void server_route() {
+  server.on("/", handle_root);
+  server.on("/list", HTTP_GET, handle_list);
+  server.on("/delete", HTTP_DELETE, handle_delete);
+  server.on("/download", HTTP_POST, handle_download);
   server.on("/upload", HTTP_POST, []() {
     server.send(200);
-  }, handleUpload);
-  server.onNotFound(handleNotFound);
+  }, handle_upload);
+  server.onNotFound(handle_not_found);
 }
